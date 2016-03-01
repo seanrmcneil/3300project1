@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" type="text/css" href="style.css">
+<!-- Load the d3 library. -->
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+//graph 1 ~ happiness
+var width = 960,
+    height = 500;
+
+var projection = d3.geo.equirectangular();
+var path = d3.geo.path().projection(projection);
+var svg = d3.select("#map").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+var g = svg.append("g");
+var worldObjects;
+var countryIDName;
+var happinessRank;
+
+//get the id mappings json file
+d3.json("id_mapping.json", function(dataID) {
+	countryIDName = dataID;
+	});
+
+//get the happiness rankings
+d3.json("happiness.json", function(happiness) {
+	happinessRank = happiness;
+	});
+
+//function to return the name of the country based on the id.
+function getCountryName(countryid){
+	for(var i =0; i<countryIDName.length; i++ ){
+		if(countryIDName[i].id == countryid){
+			return countryIDName[i].name;
+		}
+	}
+}
+
+//function to return the id of the country based on the name
+//Only used for debugging as of now
+function getCountryID(countryName){
+	for(var i =0; i<countryIDName.length; i++ ){
+		if(countryIDName[i].name == countryName){
+			return countryIDName[i].id;
+		}
+	}
+}
+
+//function to get the rank of the country basd on the country name
+function getRank(countryName){
+	var rank = 0;
+	for(var i =0; i<happinessRank.length; i++ ){
+		if(happinessRank[i].val1 == countryName){
+			rank = happinessRank[i].val0;
+		}
+	}
+	return rank;
+}
+
+//functions to convert colors based on country ranking
+//make sure all functions return 0 (black) if the rank is 0 (undefined)
+//maybe change from black to grey? Black is ugly
+function red(rank) { return Math.round((255*rank)/151) };
+function green(rank){ 
+	if (rank == 0){
+		return 0;
+	}else{
+		return  Math.round((255*(151-rank))/151)};
+	}
+function blue(rank) { return Math.round(0)};
+var countryName = "";
+
+//the magic
+d3.json("world-50m.json", function(error, world) {
+	worldObjects = world;
+
+	if(error){console.log(error); }
+	var countries = topojson.feature(world,world.objects.countries).features;
+
+	countries.forEach(function (country) {
+		countryName = getCountryName(country.id);
+		rank = getRank(countryName);
+		g.append("path").attr("d", path(country))
+		.attr("class", "country")
+		.style("fill", "rgb("+red(rank) +","+green(rank)+","+blue(rank)+")")
+		;
+	});
+
+	//using for debugging purposes.. 
+	//take out later
+	g.selectAll("path").data(countries).on("mouseover", function(country){
+		console.log(getCountryName(country.id));
+
+	})
+});
+
+console.log("after json");
+
+</script>
+
+
+
+</body>
+</html>
+
+
