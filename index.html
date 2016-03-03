@@ -62,14 +62,26 @@ function getRank(countryName){
 //functions to convert colors based on country ranking
 //make sure all functions return 0 (black) if the rank is 0 (undefined)
 //maybe change from black to grey? Black is ugly
-function red(rank) { return Math.round((255*rank)/151) };
+function red(rank) {
+	if(rank==0){
+		return 238;
+	}else{
+		return Math.round(255*(255*rank)/151);
+	}
+};
 function green(rank){ 
 	if (rank == 0){
-		return 0;
+		return 233;
 	}else{
 		return  Math.round((255*(151-rank))/151)};
 	}
-function blue(rank) { return Math.round(0)};
+function blue(rank) {
+	if (rank ==0 ){
+		return 233;
+	}else{
+		return Math.round(0)
+	}
+};
 var countryName = "";
 //the magic
 d3.json("world-50m.json", function(error, world) {
@@ -91,6 +103,7 @@ d3.json("world-50m.json", function(error, world) {
 	})
 });
 console.log("after json");
+
 </script>
 
 <script>
@@ -106,7 +119,7 @@ console.log("after json");
 <div id="map2"></div>
 
 <script>
-//graph 1 ~ happiness
+//graph 2 ~ GDP
 var width2 = 960,
     height2 = 500;
 var projection2 = d3.geo.equirectangular();
