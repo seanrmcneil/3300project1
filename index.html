@@ -171,6 +171,64 @@ d3.json("world-50m.json", function(error, world) {
 });
  </script>
 
+<div id="scatterplot"></div>
+<script>
+//scatterplot : drug use of optimistic countries and pessimistic countries
+var width3 = 500,
+    height3 = 500,
+    padding = 60;
+var svg3 = d3.select("#scatterplot").append("svg")
+    .attr("width", width3)
+    .attr("height", height3)
+    .append("g");
+
+//X axis for how drugged they are
+//Y axis for optimism. Above 0 : opimitistic. Below 0 : pessimistic
+var xScale = d3.scale.linear().domain([1,200]).range([padding, width3 - padding]);
+var yScale = d3.scale.linear().domain([-150,150]).range([height3 - padding, padding]);
+var xAxis = d3.svg.axis().scale(xScale).orient("bottom").ticks(0);
+var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(0);
+svg3.append("g").attr("transform", "translate(0," + height/2  + ")").attr("class", "axis")
+.call(xAxis);
+svg3.append("g").attr("transform", "translate(" + padding + ",0)").attr("class", "axis")
+.call(yAxis);
+
+
+
+var optimismData;
+//Need to have happiness and gdp together to generate difference
+//TODO : find some script/some way to merge/join JSON files.. or manually input
+//Population in the data?
+var combinedJSON = {}
+// optimism.json just for temporary use
+d3.json("optimism.json", function(error, json){
+	//TODO : add all the data
+	//TODO : maybe transparent circles?
+	//
+	if(error){console.log(error); }
+        var rScale = d3.scale.pow()
+            .domain([-30, 30])
+            .range([0, 20]);
+        for(var i = 0; i<json.length;i++){        	
+        	 svg3.append("circle")
+        	.attr("class", "circle")
+        	.attr("cx",xScale(json[i].drug))
+        	.attr("cy", yScale(json[i].opt))
+        	.attr("r", rScale(json[i].population))
+        	//color is opposite of what it should be
+        	//TODO : change color to suit
+        	.style("fill", "rgb("+red(json[i].opt) +","+green(json[i].opt)+","+blue(json[i].opt)+")")
+        	.style("fill-opacity", 0.4);
+        }
+});
+//Some thoughts : some kind of visualization towards the right would be great.
+//Cannabis leaves maybe?
+
+</script>
+
+
+
+
 
 
 
