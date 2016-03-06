@@ -176,18 +176,22 @@ d3.json("world-50m.json", function(error, world) {
 
 <script>
 
-var widthGraph = 960,
+var widthGraph = 1200,
 	heightGraph = 960,
 	xPaddingGraph = 50,
 	yPaddingGraph = 50;
+var gdpFinal;
+var happinessFinal;
+
+
 
 
 var svgGraph = d3.select("#graph").append("svg")
     .attr("width", widthGraph)
     .attr("height", heightGraph)
     .append("g");
-var xScaleGraph = d3.scale.linear().domain([1, 200]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
-var yScaleGraph = d3.scale.linear().domain([1, 200]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
+var xScaleGraph = d3.scale.log().domain([150, 130000]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
+var yScaleGraph = d3.scale.linear().domain([10, 50]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
 var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(0);
 var yAxis = d3.svg.axis().scale(yScaleGraph).orient("left").ticks(0);
 svgGraph.append("g").attr("transform", "translate(0," + (heightGraph - yPaddingGraph) + ")")
@@ -200,14 +204,39 @@ var rScale = d3.scale.pow()
             .domain([-30, 30])
             .range([0, 20]);
 
-d3.json("cannabis.json", function(error, cannabisJSON){
+d3.json("happiness_final.json", function(error, happinessFinalJSON){
+	happinessFinal = happinessFinalJSON;
 		if(error){console.log(error); }
+});
+
+function getGDPValue(countryName){
+	var value = 0;
+	for(var i =0; i<gdpFinal.length; i++ ){
+		if((gdpFinal[i].country_name) == countryName){
+			value = gdpFinal[i].gdp;
+		}
+	}
+	return value;
+}
+
+function getHappinessValue(countryName){
+	var value = 0;
+	for(var i =0; i<happinessFinal.length; i++ ){
+		if(happinessFinal[i].country_name == countryName){
+			value = happinessFinal[i].HPI;
+		}
+	}
+	return value;
+}
 
 
+d3.json("GDP_final.json", function(error, gdpFinalJSON){
+		if(error){console.log(error); }
+		gdpFinal = gdpFinalJSON;
         for(var i = 0; i<1000;i++){
 				name = getCountryName(i);
-				gdp = getGdpRank(name);
-				happiness = getRank(name);
+				gdp = getGDPValue(name);
+				happiness = getHappinessValue(name);
 				if(gdp == 0 || happiness == 0)
 					continue;
 				//region
@@ -216,12 +245,10 @@ d3.json("cannabis.json", function(error, cannabisJSON){
        	 		.attr("class", "circle")
         		.attr("cx",xScaleGraph(gdp))
         		.attr("cy", yScaleGraph(happiness))
-        		.attr("r", 10)
+        		.attr("r", 20)
         		.style("fill", "red")
         		.style("fill-opacity", 0.4);
-				
 			}
-
 		});
 
 
