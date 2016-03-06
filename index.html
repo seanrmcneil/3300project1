@@ -172,12 +172,74 @@ d3.json("world-50m.json", function(error, world) {
 });
  </script>
 
+ <div id = "graph"> </div>
+
+<script>
+
+var widthGraph = 960,
+	heightGraph = 960,
+	xPaddingGraph = 50,
+	yPaddingGraph = 50;
+
+
+var svgGraph = d3.select("#graph").append("svg")
+    .attr("width", widthGraph)
+    .attr("height", heightGraph)
+    .append("g");
+var xScaleGraph = d3.scale.linear().domain([1, 200]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
+var yScaleGraph = d3.scale.linear().domain([1, 200]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
+var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(0);
+var yAxis = d3.svg.axis().scale(yScaleGraph).orient("left").ticks(0);
+svgGraph.append("g").attr("transform", "translate(0," + (heightGraph - yPaddingGraph) + ")")
+.call(xAxis);
+svgGraph.append("g").attr("transform", "translate(" + xPaddingGraph + ",0)")
+.call(yAxis);
+
+
+var rScale = d3.scale.pow()
+            .domain([-30, 30])
+            .range([0, 20]);
+
+d3.json("cannabis.json", function(error, cannabisJSON){
+		if(error){console.log(error); }
+
+
+        for(var i = 0; i<1000;i++){
+				name = getCountryName(i);
+				gdp = getGdpRank(name);
+				happiness = getRank(name);
+				if(gdp == 0 || happiness == 0)
+					continue;
+				//region
+				
+        		svgGraph.append("circle")
+       	 		.attr("class", "circle")
+        		.attr("cx",xScaleGraph(gdp))
+        		.attr("cy", yScaleGraph(happiness))
+        		.attr("r", 10)
+        		.style("fill", "red")
+        		.style("fill-opacity", 0.4);
+				
+			}
+
+		});
+
+
+
+
+
+
+
+
+</script>
+
+
 <div id="scatterplot"></div>
 <script>
 //scatterplot : drug use of optimistic countries and pessimistic countries
 var width3 = 1000,
     height3 = 700,
-    xPadding3 = 60;
+    xPadding3 = 60,
     yPadding3 = 50;
 var svg3 = d3.select("#scatterplot").append("svg")
     .attr("width", width3)
