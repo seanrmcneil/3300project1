@@ -25,6 +25,7 @@ var g = svg.append("g");
 var worldObjects;
 var countryIDName;
 var happinessRank;
+var color1 =d3.scale.linear().domain([1,151]).range(["yellow","red"]);
 //get the id mappings json file
 d3.json("id_mapping.json", function(dataID) {
 	countryIDName = dataID;
@@ -60,29 +61,15 @@ function getRank(countryName){
 	}
 	return rank;
 }
-//functions to convert colors based on country ranking
-//make sure all functions return 0 (black) if the rank is 0 (undefined)
-//maybe change from black to grey? Black is ugly
-function red(rank) {
-	if(rank==0){
-		return 238;
+//functiion to define the color
+function getColorMap1(rank){
+	if(rank ==0){
+		return "grey";
 	}else{
-		return Math.round(255*(255*rank)/151);
-	}
-};
-function green(rank){ 
-	if (rank == 0){
-		return 233;
-	}else{
-		return  Math.round((255*(151-rank))/151)};
-	}
-function blue(rank) {
-	if (rank ==0 ){
-		return 233;
-	}else{
-		return Math.round(0)
-	}
-};
+	  	return color1(rank);
+	  }
+}
+
 var countryName = "";
 //the magic
 d3.json("world-50m.json", function(error, world) {
@@ -94,7 +81,7 @@ d3.json("world-50m.json", function(error, world) {
 		rank = getRank(countryName);
 		g.append("path").attr("d", path(country))
 		.attr("class", "country")
-		.style("fill", "rgb("+red(rank) +","+green(rank)+","+blue(rank)+")")
+		.style("fill", (getColorMap1(rank)))
 		;
 	});
 	//using for debugging purposes.. 
@@ -131,6 +118,7 @@ var svg2 = d3.select("#map2").append("svg")
 var g2 = svg2.append("g");
 var worldObjects2;
 var gdpRank;
+var color2 =d3.scale.linear().domain([1,208]).range(["palegreen","grey"]);
 
 
 //get te gdp rankings
@@ -138,7 +126,14 @@ d3.json("gdp.json", function(gdp) {
 	gdpRank = gdp;
 })
 
-
+//functiion to define the color
+function getColorMap2(rank){
+	if(rank ==0){
+		return "grey";
+	}else{
+	  	return color2(rank);
+	  }
+}
 //function to get the rank of the country basd on the country name
 function getGdpRank(countryName){
 	var rank = 0;
@@ -150,7 +145,7 @@ function getGdpRank(countryName){
 	return rank;
 }
 
-var countryName = "";
+//countryName = "";
 //the magic
 d3.json("world-50m.json", function(error, world) {
 	worldObjects2 = world;
@@ -161,8 +156,7 @@ d3.json("world-50m.json", function(error, world) {
 		rank2 = getGdpRank(countryName);
 		g2.append("path").attr("d", path2(country))
 		.attr("class", "country")
-		.style("fill", "rgb("+red(rank2) +","+green(rank2)+","+blue(rank2)+")")
-		;
+		.style("fill", getColorMap2(rank2));
 	});
 	//using for debugging purposes.. 
 	//take out later
