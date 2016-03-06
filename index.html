@@ -217,7 +217,7 @@ var svgGraph = d3.select("#graph").append("svg")
     .append("g");
 var xScaleGraph = d3.scale.log().domain([150, 130000]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
 var yScaleGraph = d3.scale.linear().domain([10, 50]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
-var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(0);
+var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(5, "$");
 var yAxis = d3.svg.axis().scale(yScaleGraph).orient("left").ticks(0);
 svgGraph.append("g").attr("transform", "translate(0," + (heightGraph - yPaddingGraph) + ")")
 .call(xAxis);
@@ -281,8 +281,8 @@ var cannabisUsage;
 //X axis for optimism. Above 0 : opimitistic. Below 0 : pessimistic
 var xScale4 = d3.scale.linear().domain([-150,150]).range([xPadding3, width3 - xPadding3]);
 var yScale4 = d3.scale.linear().domain([0,20]).range([height3 - yPadding3, yPadding3]);
-var xAxis = d3.svg.axis().scale(xScale4).orient("bottom").ticks(0);
-var yAxis = d3.svg.axis().scale(yScale4).orient("left").ticks(0);
+var xAxis = d3.svg.axis().scale(xScale4).orient("bottom").ticks(5);
+var yAxis = d3.svg.axis().scale(yScale4).orient("left").ticks(5);
 svg3.append("g").attr("transform", "translate(0," + (height3 - yPadding3) + ")").attr("class", "axis")
 .call(xAxis);
 svg3.append("g").attr("transform", "translate(" + width3/2 + ",0)").attr("class", "axis")
@@ -300,28 +300,32 @@ d3.json("cannabis.json", function(error, cannabisJSON){
             .domain([-30, 30])
             .range([0, 20]);
         for(var i = 0; i<1000;i++){
-        	try{
-				name = getCountryName(i);
-				gdp = getGdpRank(name);
-				happiness = getRank(name);
-				optimism = happiness - gdp;
-				cannabis = getCannabisUsage(name);
-				if(gdp == 0 || happiness == 0 || cannabis == 0)
-					continue;
-        		svg3.append("circle")
-       	 		.attr("class", "circle")
-        		.attr("cx",xScale4(optimism))
-        		.attr("cy", yScale4(cannabis))
-        		.attr("r", rScale(30))
-        		.style("fill", (color3(optimism)))
-        		.style("fill-opacity", 0.4);
-				}
-			catch(err){
-				console.log(err.message);
-			}
-        	
-       }
+			name = getCountryName(i);
+			gdp = getGdpRank(name);
+			happiness = getRank(name);
+			optimism = happiness - gdp;
+			cannabis = getCannabisUsage(name);
+			if(gdp == 0 || happiness == 0 || cannabis == 0)
+				continue;
+        	svg3.append("circle")
+       	 	.attr("class", "circle")
+        	.attr("cx",xScale4(optimism))
+        	.attr("cy", yScale4(cannabis))
+        	.attr("r", rScale(30))
+        	.style("fill", (color3(optimism)))
+        	.style("fill-opacity", 0.4);
+		}	       
 });
+
+
+var xLine = svg3.append("line")
+            .attr("x1", xPadding3)
+            .attr("y1", height3)
+            .attr("x2", width3 - xPadding3)
+            .attr("y2", height3)
+            .attr("stroke-width", 2)
+            .attr("stroke", "black");
+
 </script>
 </div>
 </body>
