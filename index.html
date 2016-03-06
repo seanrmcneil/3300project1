@@ -1,15 +1,15 @@
 <html>
 <head>
-<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" type="text/css" href="style.css">
 <!-- Load the d3 library. -->
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script src="http://d3js.org/topojson.v1.min.js"></script>
 
-
 </head>
 <body>
-
+<div class="graph">
+<h2>Happiness</h2>
 <div id="map"></div>
 
 <script>
@@ -25,15 +25,23 @@ var g = svg.append("g");
 var worldObjects;
 var countryIDName;
 var happinessRank;
-var color1 =d3.scale.linear().domain([1,151]).range(["yellow","red"]);
+var color1 =d3.scale.linear().domain([1,151]).range(["#8856a7","white"]);
+var color2 =d3.scale.linear().domain([1,208]).range(["#6AAF6A","white"]);
 //get the id mappings json file
 d3.json("id_mapping.json", function(dataID) {
 	countryIDName = dataID;
 	});
-//get the happiness rankings
-d3.json("happiness.json", function(happiness) {
+
+//get the happiness data
+d3.json("happiness_final.json", function(happiness) {
 	happinessRank = happiness;
 	});
+
+//get te gdp data
+d3.json("GDP_final.json", function(gdp) {
+	gdpRank = gdp;
+})
+
 //function to return the name of the country based on the id.
 function getCountryName(countryid){
 	for(var i =0; i<countryIDName.length; i++ ){
@@ -55,19 +63,63 @@ function getCountryID(countryName){
 function getRank(countryName){
 	var rank = 0;
 	for(var i =0; i<happinessRank.length; i++ ){
-		if(happinessRank[i].val1 == countryName){
-			rank = happinessRank[i].val0;
+		if(happinessRank[i].country_name == countryName){
+			rank = happinessRank[i].rank;
 		}
 	}
 	return rank;
 }
-//functiion to define the color
+//function to define the color
 function getColorMap1(rank){
 	if(rank ==0){
 		return "grey";
 	}else{
-	  	return color1(rank);
+		return color1(rank);}
+}
+//functiion to define the color
+function getColorMap2(rank){
+	if(rank ==0){
+		return "grey";
+	}else{
+		return color2(rank);
 	  }
+}
+//function to get the rank of the country basd on the country name
+function getGdpRank(countryName){
+	var rank = 0;
+	for(var i =0; i<gdpRank.length; i++ ){
+		if(gdpRank[i].country_name == countryName){
+			rank = gdpRank[i].rank;
+		}
+	}
+	return rank;
+}
+function getGDPValue(countryName){
+	var value = 0;
+	for(var i =0; i<gdpFinal.length; i++ ){
+		if((gdpFinal[i].country_name) == countryName){
+			value = gdpFinal[i].gdp;
+		}
+	}
+	return value;
+}
+function getHappinessValue(countryName){
+	var value = 0;
+	for(var i =0; i<happinessFinal.length; i++ ){
+		if(happinessFinal[i].country_name == countryName){
+			value = happinessFinal[i].HPI;
+		}
+	}
+	return value;
+}
+function getCannabisUsage(countryName){
+	var usage = 0;
+	for(var i =0; i<200; i++ ){
+		if(cannabisUsage[i].val0 == countryName){
+			usage = cannabisUsage[i].val1;
+		}
+	}
+	return usage;
 }
 
 var countryName = "";
@@ -93,7 +145,7 @@ d3.json("world-50m.json", function(error, world) {
 console.log("after json");
 
 </script>
-
+</div>
 <script>
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -103,7 +155,8 @@ console.log("after json");
 /////////////////////////////////////////////////////////
 </script>
 
-
+<div class="graph">
+<h2>GDP</h2>
 <div id="map2"></div>
 
 <script>
@@ -118,32 +171,8 @@ var svg2 = d3.select("#map2").append("svg")
 var g2 = svg2.append("g");
 var worldObjects2;
 var gdpRank;
-var color2 =d3.scale.linear().domain([1,208]).range(["palegreen","grey"]);
 
 
-//get te gdp rankings
-d3.json("gdp.json", function(gdp) {
-	gdpRank = gdp;
-})
-
-//functiion to define the color
-function getColorMap2(rank){
-	if(rank ==0){
-		return "grey";
-	}else{
-	  	return color2(rank);
-	  }
-}
-//function to get the rank of the country basd on the country name
-function getGdpRank(countryName){
-	var rank = 0;
-	for(var i =0; i<gdpRank.length; i++ ){
-		if(gdpRank[i].val0 == countryName){
-			rank = gdpRank[i].val1;
-		}
-	}
-	return rank;
-}
 
 //countryName = "";
 //the magic
@@ -165,7 +194,9 @@ d3.json("world-50m.json", function(error, world) {
 	})
 });
  </script>
-
+</div>
+<div class="graph">
+<h2>GDP vs Happiness</h2>
  <div id = "graph"> </div>
 
 <script>
@@ -203,25 +234,6 @@ d3.json("happiness_final.json", function(error, happinessFinalJSON){
 		if(error){console.log(error); }
 });
 
-function getGDPValue(countryName){
-	var value = 0;
-	for(var i =0; i<gdpFinal.length; i++ ){
-		if((gdpFinal[i].country_name) == countryName){
-			value = gdpFinal[i].gdp;
-		}
-	}
-	return value;
-}
-
-function getHappinessValue(countryName){
-	var value = 0;
-	for(var i =0; i<happinessFinal.length; i++ ){
-		if(happinessFinal[i].country_name == countryName){
-			value = happinessFinal[i].HPI;
-		}
-	}
-	return value;
-}
 
 
 d3.json("GDP_final.json", function(error, gdpFinalJSON){
@@ -246,15 +258,10 @@ d3.json("GDP_final.json", function(error, gdpFinalJSON){
 		});
 
 
-
-
-
-
-
-
 </script>
-
-
+</div>
+<div class="graph">
+<h2>Drug Use vs. Optimism</h2>
 <div id="scatterplot"></div>
 <script>
 //scatterplot : drug use of optimistic countries and pessimistic countries
@@ -268,15 +275,7 @@ var svg3 = d3.select("#scatterplot").append("svg")
     .append("g");
 var cannabisUsage;
 
-function getCannabisUsage(countryName){
-	var usage = 0;
-	for(var i =0; i<200; i++ ){
-		if(cannabisUsage[i].val0 == countryName){
-			usage = cannabisUsage[i].val1;
-		}
-	}
-	return usage;
-}
+
 
 //Y axis for how drugged they are
 //X axis for optimism. Above 0 : opimitistic. Below 0 : pessimistic
@@ -324,6 +323,6 @@ d3.json("cannabis.json", function(error, cannabisJSON){
        }
 });
 </script>
-
+</div>
 </body>
 </html>

@@ -1,9 +1,15 @@
 body{
-
+	font-family: 'Titillium Web', sans-serif;
 }
 
 
 
 .country{
 	stroke: #888;
+}
+
+.graph{
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
 }
