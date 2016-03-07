@@ -166,13 +166,50 @@ d3.json("world-50m.json", function(error, world) {
 		g.append("path").attr("d", path(country))
 		.attr("class", "country")
 		.style("fill", (getColorMap1(rank)))
-		;
+
 	});
 	//using for debugging purposes.. 
 	//take out later
 	g.selectAll("path").data(countries).on("mouseover", function(country){
 		console.log(getCountryName(country.id));
-	})
+
+	});
+	g.append("rect")
+		.attr("x", 0)
+		.attr("y", 250)
+		.attr("width", 10)
+		.attr("height", 150)
+		.attr("class", "gradient")
+		.style("fill", "url(#gradient)");
+
+		// learned about linear gradient from http://bl.ocks.org/mbostock/1086421
+		var gradient = g.append("defs")
+		  .append("linearGradient")
+		  .attr("id", "gradient")
+		    .attr("x1", "0%")
+		    .attr("y1", "0%")
+		    .attr("x2", "0%")
+		    .attr("y2", "100%");
+		gradient.append("stop")
+		    .attr("offset", "0%")
+		    .attr("stop-color", "white");
+		gradient.append("stop")
+		    .attr("offset", "100%")
+		    .attr("stop-color", "#8856a7");
+
+		 g.append("text")
+		 .attr("x", 12)
+		 .attr("y", 250)
+		 .text("Least Happy");
+
+		  g.append("text")
+		 .attr("x", 12)
+		 .attr("y", 400)
+		 .text("Happiest");
+
+		 
+
+
 });
 console.log("after json");
 
@@ -223,7 +260,40 @@ d3.json("world-50m.json", function(error, world) {
 	//take out later
 	g2.selectAll("path").data(countries2).on("mouseover", function(country){
 		console.log(getCountryName(country.id));
-	})
+	});
+
+	g2.append("rect")
+		.attr("x", 0)
+		.attr("y", 250)
+		.attr("width", 10)
+		.attr("height", 150)
+		.attr("class", "gradient")
+		.style("fill", "url(#gradient2)");
+
+		// learned about linear gradient from http://bl.ocks.org/mbostock/1086421
+		var gradient2 = g2.append("defs")
+		  .append("linearGradient")
+		  .attr("id", "gradient2")
+		    .attr("x1", "0%")
+		    .attr("y1", "0%")
+		    .attr("x2", "0%")
+		    .attr("y2", "100%");
+		gradient2.append("stop")
+		    .attr("offset", "0%")
+		    .attr("stop-color", "white");
+		gradient2.append("stop")
+		    .attr("offset", "100%")
+		    .attr("stop-color", "#6AAF6A");
+
+		 g2.append("text")
+		 .attr("x", 12)
+		 .attr("y", 250)
+		 .text("Poorest");
+
+		  g2.append("text")
+		 .attr("x", 12)
+		 .attr("y", 400)
+		 .text("Richest");
 });
  </script>
 </div>
