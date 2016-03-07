@@ -297,66 +297,17 @@ d3.json("world-50m.json", function(error, world) {
 });
  </script>
 </div>
+
+
+
 <div class="graph">
 <h2>GDP vs Happiness</h2>
  <div id = "graph"> </div>
 
-
-
-<div class='my-legend'>
-<div class='legend-title'>The Title or Explanation of your Map</div>
-<div class='legend-scale'>
-  <ul class='legend-labels'>
-    <li><span style='background:orange;'></span>Africa</li>
-    <li><span style='background:red;'></span>South America</li>
-    <li><span style='background:maroon;'></span>Central</li>
-    <li><span style='background:blue;'></span>Western Europe</li>
-    <li><span style='background:purple;'></span>Eastern Europe</li>
-  </ul>
-</div>
-<div class='legend-source'>Source: <a href="#link to source">Name of source</a></div>
-</div>
-
-<style type='text/css'>
-  .my-legend .legend-title {
-    text-align: left;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 90%;
-    }
-  .my-legend .legend-scale ul {
-    margin: 0;
-    margin-bottom: 5px;
-    padding: 0;
-    float: left;
-    list-style: none;
-    }
-  .my-legend .legend-scale ul li {
-    font-size: 100%;
-    list-style: none;
-    margin-left: 0;
-    line-height: 28px;
-    margin-bottom: 2px;
-    }
-  .my-legend ul.legend-labels li span {
-    display: block;
-    float: left;
-    height: 26px;
-    width: 40px;
-    margin-right: 5px;
-    margin-left: 0;
-    border: 1px solid #999;
-    }
-  .my-legend .legend-source {
-    font-size: 70%;
-    color: #999;
-    clear: both;
-    }
-  .my-legend a {
-    color: #777;
-    }
-</style>
 <script>
+var legendRectSize = 18;
+var legendSpacing = 4;
+
 
 var widthGraph = 1000,
 	heightGraph = 600,
@@ -366,15 +317,22 @@ var gdpFinal;
 var happinessFinal;
 var region;
 
+var dataRegions = ["south america", "central america", "eastern africa", "northern africa", "western africa", "eastern europe", "western europe"];
+var colorGraph = d3.scale.ordinal()
+    .range(["#7f0000", "#ff3232", "#EE4000", "#FF5721", "#FF3D0D", "blue", "purple"]);
+
 d3.json("all.json", function(regiondata) {
 	region = regiondata;
 })
+
+
 
 
 var svgGraph = d3.select("#graph").append("svg")
     .attr("width", widthGraph)
     .attr("height", heightGraph)
     .append("g");
+
 var xScaleGraph = d3.scale.log().domain([150, 130000]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
 var yScaleGraph = d3.scale.linear().domain([10, 50]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
 var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(5, "$");
@@ -423,7 +381,24 @@ d3.json("GDP_final.json", function(error, gdpFinalJSON){
 
 		});
 
+var mapLegend = svgGraph.selectAll(".legend")
+      .data(dataRegions)
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
+  mapLegend.append("rect")
+      .attr("x", width - 18)
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", colorGraph);
+
+  mapLegend.append("text")
+      .attr("x", width - 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .style("text-anchor", "end")
+      .text(function(d) { return d; });
 
 </script>
 </div>
