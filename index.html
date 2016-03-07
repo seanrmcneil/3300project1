@@ -10,6 +10,8 @@
 <body>
 <div class="graph">
 <h2>Happiness</h2>
+<p class = "description">The happiness graph displays each countries relative happiness index from http://www.happyplanetindex.org/data/. The happiest countries are represented in purple and the least happy countries are reprsented in white with shades of purple representing everything inbetween. Grey represents countries that are undefined. </p>
+
 <div id="map"></div>
 
 <script>
@@ -226,6 +228,7 @@ console.log("after json");
 
 <div class="graph">
 <h2>GDP</h2>
+<p class = "description">The GDP graph displays each countries relative GDP rank from https://www.google.com/fusiontables/DataSource?docid=1N0MaGTWtytF3zW-nj7OGnJFB3lf_n4Zcr54sib4#rows:id=1. The countries with the highest GDP are represented in green and the countries with the lowest GDP are represented in white. Grey represents countries that are undefined. </p>
 <div id="map2"></div>
 
 <script>
@@ -302,6 +305,7 @@ d3.json("world-50m.json", function(error, world) {
 
 <div class="graph">
 <h2>GDP vs Happiness</h2>
+<p class = "description">GDP VS Happiness plots each country's GDP (in $) vs their happiness index. Different regions are represented by different colors as shown by the key. Only the most interesting regions are colored. Central and South America are interesting because they are particularly happy given their GDP. Western Europe is interesting because it is particularly unhappy given the GDP.</p>
  <div id = "graph"> </div>
 
 <script>
@@ -370,13 +374,12 @@ d3.json("GDP_final.json", function(error, gdpFinalJSON){
         		.attr("cy", yScaleGraph(happiness))
         		.attr("r", 12)
         		.style("fill", fillColor(name))
-        		.style("fill-opacity", 0.4)
+        		.attr("class", "country_circles")
         		.attr("data-legend",function(d) { return d});
 			};
 				legend = svg.append("g")
 				  .attr("class","legend")
 				  .attr("transform","translate(50,30)")
-				  .style("font-size","12px")
 				  .call(d3.legend);
 
 		});
@@ -412,6 +415,7 @@ var mapLegend = svgGraph.selectAll(".legend")
 
 <div class="graph">
 <h2>Drug Use vs. Optimism</h2>
+<p class = "description">ADD DESCRIPTION. </p>
 <div id="scatterplot"></div>
 <script>
 //scatterplot : drug use of optimistic countries and pessimistic countries

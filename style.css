@@ -1,9 +1,18 @@
 body{
 	font-family: 'Titillium Web', sans-serif;
 }
-
-
-
+.legend{
+	font-size: 12px;
+}
+.description{
+	width: 960;
+	margin-right: auto;
+	margin-left: auto;
+	text-align: left;
+}
+.country_circles{
+	fill-opacity: 0.4;
+}
 .country{
 	stroke: #888;
 }
