@@ -22,3 +22,11 @@ body{
 	margin-right: auto;
 	text-align: center;
 }
+
+.line{
+	stroke: black;
+}
+
+.axisLabel{
+	font-size: 20px;
+}
