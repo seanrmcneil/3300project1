@@ -403,7 +403,7 @@ var mapLegend = svgGraph.selectAll(".legend")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
 
-//Function that draws an arrow 
+//Arrows and labels, on both axes
 function drawArrow(svgA,width,height,xPad,yPad,xSkew,ySkew,xLabel,yLabel){
 	svgA.append("line")
 	.attr("class","line")
@@ -464,6 +464,76 @@ var yText = svgA.append("text")
  	.attr("transform", "translate(" + xPad/3 + ", " + (height/2 + yPad/5) +") rotate (-90)");
 
 }
+
+//No arrow on y axis
+function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
+	svgA.append("line")
+	.attr("class","line")
+    .attr("x1", width/2 + xPad /5)
+    .attr("y1", height - yPad/2)
+    .attr("x2", width - xPad)
+    .attr("y2", height - yPad/2);
+
+	svgA.append("line")
+	.attr("class", "line")
+    .attr("x1", width - xPad)
+    .attr("y1", height - yPad/2)
+    .attr("x2", width - xPad *1.2)
+    .attr("y2", height - yPad/2 - yPad/xSkew);
+
+	svgA.append("line")
+	.attr("class", "line")
+    .attr("x1", width - xPad)
+    .attr("y1", height - yPad/2)
+    .attr("x2", width - xPad * 1.2)
+    .attr("y2", height - yPad/2 + yPad/xSkew);
+
+	svgA.append("line")
+	.attr("class","line")
+    .attr("x1", width/2 - xPad /5)
+    .attr("y1", height - yPad/2)
+    .attr("x2", xPad)
+    .attr("y2", height - yPad/2);
+
+	svgA.append("line")
+	.attr("class", "line")
+    .attr("x1", xPad)
+    .attr("y1", height - yPad/2)
+    .attr("x2", xPad *1.2)
+    .attr("y2", height - yPad/2 - yPad/xSkew);
+
+	svgA.append("line")
+	.attr("class", "line")
+    .attr("x1", xPad)
+    .attr("y1", height - yPad/2)
+    .attr("x2", xPad * 1.2)
+    .attr("y2", height - yPad/2 + yPad/xSkew);
+
+	svgA.append("text")
+	.attr("class", "axisLabel")
+	.attr("text-anchor", "middle")
+    .attr("x", width/2 + width/(5.5))
+    .attr("y", height - yPad/4)
+ 	.text(xLabel);
+
+	svgA.append("text")
+	.attr("class", "axisLabel")
+	.attr("text-anchor", "middle")
+    .attr("x", width/2 - width/(5.5))
+    .attr("y", height - yPad/4)
+ 	.text(xLabel2);
+
+ 	svgA.append("text")
+	.attr("class", "axisLabel")
+	.attr("text-anchor", "middle")
+    .attr("x", 0)
+    .attr("y", 0)
+ 	.text(yLabel)
+ 	.attr("transform", "translate(" + xPad/3 + ", " + (height/2 + yPad/5) +") rotate (-90)");
+
+}
+
+
 drawArrow(svgGraph,widthGraph,heightGraph,xPaddingGraph,yPaddingGraph,5,6,
 	"GDP per Capita (log scale)","Happiness Planet Index (HPI)");
 
@@ -472,7 +542,7 @@ drawArrow(svgGraph,widthGraph,heightGraph,xPaddingGraph,yPaddingGraph,5,6,
 
 <div class="graph">
 <h2>Drug Use vs. Poor but Happy</h2>
-<p class = "description">There is clearly a correlation between how wealthy a country is and how happy it is. But as seen in the graph above, there are some countries, (and perhaps even entire regions!) where people are happier than other countries with the same money.<br><br>
+<p class = "description">There is clearly a correlation between how wealthy a country is and how happy it is. But as seen in the graph above, there are some countries, (and perhaps even entire regions!) where people are happier than other countries with the same money.<br>
 How are these countries happier relative to their wealth? <br>
 Are they perhaps simply relying on drugs?<br><br>
 Cannabis usage data from https://data.unodc.org/, UN Office on Drugs and Crime.
@@ -531,67 +601,9 @@ d3.json("cannabis.json", function(error, cannabisJSON){
         	.style("fill-opacity", 0.4);
 		}	       
 });
-//The arrows
-/*
-var xLine = svg3.append("line")
-	.attr("class","line")
-    .attr("x1", xPadding3 * 1.5)
-    .attr("y1", height3 - yPadding3/2)
-    .attr("x2", width3 - xPadding3)
-    .attr("y2", height3 - yPadding3/2);
 
-var xLineUp = svg3.append("line")
-	.attr("class", "line")
-    .attr("x1", width3 - xPadding3)
-    .attr("y1", height3 - yPadding3/2)
-    .attr("x2", width3 - xPadding3 *1.2)
-    .attr("y2", height3 - yPadding3/2 - yPadding3/6);
-
-var xLineDown = svg3.append("line")
-	.attr("class", "line")
-    .attr("x1", width3 - xPadding3)
-    .attr("y1", height3 - yPadding3/2)
-    .attr("x2", width3 - xPadding3 * 1.2)
-    .attr("y2", height3 - yPadding3/2 + yPadding3/6);
-
-var yLine = svg3.append("line")
-	.attr("class","line")
-    .attr("x1", xPadding3/2)
-    .attr("y1", yPadding3)
-    .attr("x2", xPadding3/2)
-    .attr("y2", height3 - yPadding3)
-
-var yLineUp = svg3.append("line")
-	.attr("class", "line")
-    .attr("x1", xPadding3/2)
-    .attr("y1", yPadding3)
-    .attr("x2", xPadding3/2 + xPadding3/5)
-    .attr("y2", yPadding3 + yPadding3/4);
-
-var yLineDown = svg3.append("line")
-	.attr("class", "line")
-    .attr("x1", xPadding3/2)
-    .attr("y1", yPadding3)
-    .attr("x2", xPadding3/2 - xPadding3/5)
-    .attr("y2", yPadding3 + yPadding3/4);
-
-var xText = svg3.append("text")
-	.attr("class", "axisLabel")
-	.attr("text-anchor", "middle")
-    .attr("x", width3/2)
-    .attr("y", height3 - yPadding3/4)
- 	.text("More optimistic!");
-
-//Set the translate to where it should rotate
-var yText = svg3.append("text")
-	.attr("class", "axisLabel")
-	.attr("text-anchor", "middle")
-    .attr("x", 0)
-    .attr("y", 0)
- 	.text("Percent using cannabis by country")
- 	.attr("transform", "translate(" + xPadding3/3 + ", " + (height3/2 + yPadding3/5) +") rotate (-90)");
- 	*/
- drawArrow(svg3,width3,height3,xPadding3,yPadding3,5,6,"Happier than what they have (Happiness Rank - GDP Rank)","Cannabis usage percentage by country (%)");
+ //drawArrow(svg3,width3,height3,xPadding3,yPadding3,5,6,"Happier than what they have (Happiness Rank - GDP Rank)","Cannabis usage percentage by country (%)");
+ drawArrow2(svg3,width3,height3,xPadding3,yPadding3,5,"Happy relative to GDP","Unhappy relative to GDP","Cannabis usage by country (%)");
 
 
 </script>
