@@ -416,70 +416,36 @@ var mapLegend = svgGraph.selectAll(".legend")
       .style("text-anchor", "end")
       .text(function(d) { return d; });
 
-//Arrows and labels, on both axes
-function drawArrow(svgA,width,height,xPad,yPad,xSkew,ySkew,xLabel,yLabel){
-	svgA.append("line")
-	.attr("class","line")
-    .attr("x1", xPad * 1.5)
-    .attr("y1", height - yPad/2)
-    .attr("x2", width - xPad)
-    .attr("y2", height - yPad/2);
-
-var xLineUp = svgA.append("line")
-	.attr("class", "line")
-    .attr("x1", width - xPad)
-    .attr("y1", height - yPad/2)
-    .attr("x2", width - xPad *1.2)
-    .attr("y2", height - yPad/2 - yPad/xSkew);
-
-var xLineDown = svgA.append("line")
-	.attr("class", "line")
-    .attr("x1", width - xPad)
-    .attr("y1", height - yPad/2)
-    .attr("x2", width - xPad * 1.2)
-    .attr("y2", height - yPad/2 + yPad/xSkew);
-
-var yLine = svgA.append("line")
-	.attr("class","line")
-    .attr("x1", xPad/2)
-    .attr("y1", yPad)
-    .attr("x2", xPad/2)
-    .attr("y2", height - yPad)
-
-var yLineUp = svgA.append("line")
-	.attr("class", "line")
-    .attr("x1", xPad/2)
-    .attr("y1", yPad)
-    .attr("x2", xPad/2 + xPad/ySkew)
-    .attr("y2", yPad + yPad/4);
-
-var yLineDown = svgA.append("line")
-	.attr("class", "line")
-    .attr("x1", xPad/2)
-    .attr("y1", yPad)
-    .attr("x2", xPad/2 - xPad/ySkew)
-    .attr("y2", yPad + yPad/4);
-
-var xText = svgA.append("text")
+//Function to put labels, on both axes.
+//Assumes the graph starts from 0 for x and y axes (no negative values)
+//Provide specific svg to draw
+function drawLabels(svgA,width,height,xPad,yPad,xLabel,yLabel){
+	//Label on x axis
+	svgA.append("text")
 	.attr("class", "axisLabel")
 	.attr("text-anchor", "middle")
     .attr("x", width/2)
     .attr("y", height - yPad/4)
  	.text(xLabel);
 
-//Set the translate to where it should rotate
-var yText = svgA.append("text")
+ 	//Label on y axis
+	svgA.append("text")
 	.attr("class", "axisLabel")
 	.attr("text-anchor", "middle")
     .attr("x", 0)
     .attr("y", 0)
  	.text(yLabel)
  	.attr("transform", "translate(" + xPad/3 + ", " + (height/2 + yPad/5) +") rotate (-90)");
-
 }
 
-//No arrow on y axis
-function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
+//Draw arrow on x axis and and label on both sides
+//provide svg to draw on that specific svg. 
+//For xSkew, larger the number, smaller the arrowheads are
+//xLabel : label for the left half of x axis
+//yLabel2 : label for the right half of x axis
+//yLabel : label for the y axis
+function drawArrowAndLabel(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
+	//The line for right arrow
 	svgA.append("line")
 	.attr("class","line")
     .attr("x1", width/2 + xPad /5)
@@ -487,6 +453,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("x2", width - xPad)
     .attr("y2", height - yPad/2);
 
+    //the upper part of the right arrow
 	svgA.append("line")
 	.attr("class", "line")
     .attr("x1", width - xPad)
@@ -494,6 +461,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("x2", width - xPad *1.2)
     .attr("y2", height - yPad/2 - yPad/xSkew);
 
+    //the bottom part of the right arrow
 	svgA.append("line")
 	.attr("class", "line")
     .attr("x1", width - xPad)
@@ -501,6 +469,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("x2", width - xPad * 1.2)
     .attr("y2", height - yPad/2 + yPad/xSkew);
 
+    //The line for left arrow
 	svgA.append("line")
 	.attr("class","line")
     .attr("x1", width/2 - xPad /5)
@@ -508,6 +477,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("x2", xPad)
     .attr("y2", height - yPad/2);
 
+    //The upper part of the left arrow
 	svgA.append("line")
 	.attr("class", "line")
     .attr("x1", xPad)
@@ -515,6 +485,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("x2", xPad *1.2)
     .attr("y2", height - yPad/2 - yPad/xSkew);
 
+    //The bottom part of the left arrow
 	svgA.append("line")
 	.attr("class", "line")
     .attr("x1", xPad)
@@ -522,6 +493,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("x2", xPad * 1.2)
     .attr("y2", height - yPad/2 + yPad/xSkew);
 
+    //Label for the right arrow
 	svgA.append("text")
 	.attr("class", "axisLabel")
 	.attr("text-anchor", "middle")
@@ -529,6 +501,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("y", height - yPad/4)
  	.text(xLabel);
 
+ 	//Label for the left arrow
 	svgA.append("text")
 	.attr("class", "axisLabel")
 	.attr("text-anchor", "middle")
@@ -536,6 +509,7 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("y", height - yPad/4)
  	.text(xLabel2);
 
+ 	//Y axis label
  	svgA.append("text")
 	.attr("class", "axisLabel")
 	.attr("text-anchor", "middle")
@@ -543,11 +517,9 @@ function drawArrow2(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLabel){
     .attr("y", 0)
  	.text(yLabel)
  	.attr("transform", "translate(" + xPad/3 + ", " + (height/2 + yPad/5) +") rotate (-90)");
-
 }
 
-
-drawArrow(svgGraph,widthGraph,heightGraph,xPaddingGraph,yPaddingGraph,5,6,
+drawLabels(svgGraph,widthGraph,heightGraph,xPaddingGraph,yPaddingGraph,
 	"GDP per Capita (log scale)","Happiness Planet Index (HPI)");
 
 </script>
@@ -563,7 +535,7 @@ Cannabis usage data from https://data.unodc.org/, UN Office on Drugs and Crime.
 <div id="scatterplot"></div>
 <script>
 //scatterplot : drug use of optimistic countries and pessimistic countries
-var width3 = 800,
+var width3 = 1000,
     height3 = 600,
     xPadding3 = 100,
     yPadding3 = 100;
@@ -572,8 +544,6 @@ var svg3 = d3.select("#scatterplot").append("svg")
     .attr("height", height3)
     .append("g");
 var cannabisUsage;
-
-
 
 //Y axis for how drugged they are
 //X axis for optimism. Above 0 : opimitistic. Below 0 : pessimistic
@@ -585,9 +555,8 @@ svg3.append("g").attr("transform", "translate(0," + (height3 - yPadding3) + ")")
 .call(xAxis);
 svg3.append("g").attr("transform", "translate(" + width3/2 + ",0)").attr("class", "axis")
 .call(yAxis);
-var color3 =d3.scale.linear().domain([-150,150]).range(["#000","yellow"]);
+var color3 =d3.scale.linear().domain([-150,150]).range(["#0f4fa8","yellow"]);
 
-//Population in the data?
 //Drug data : General Prevalence - Cannabis
 //Annual Prevalence of Use as a percentage of the population aged 15-64
 //From https://data.unodc.org/
@@ -614,10 +583,9 @@ d3.json("cannabis.json", function(error, cannabisJSON){
         	.style("fill-opacity", 0.4);
 		}	       
 });
-
- //drawArrow(svg3,width3,height3,xPadding3,yPadding3,5,6,"Happier than what they have (Happiness Rank - GDP Rank)","Cannabis usage percentage by country (%)");
- drawArrow2(svg3,width3,height3,xPadding3,yPadding3,5,"Happy relative to GDP","Unhappy relative to GDP","Cannabis usage by country (%)");
-
+//Put the arrows labels on the graph
+drawArrowAndLabel(svg3,width3,height3,xPadding3,yPadding3,5,
+ 	"Happy relative to GDP","Unhappy relative to GDP","Cannabis usage by country (%)");
 
 </script>
 </div>
