@@ -137,15 +137,15 @@ function getCannabisUsage(countryName){
 function fillColor(countryName){
 	temp_region = getRegion(countryName);
 	if(temp_region== "South America"){
-		return "#7f0000";
+		return "#009933";
 	}else if(temp_region == "Central America"){
-		return "#ff3232";
+		return "#009933";
 	}else if(temp_region == "Eastern Africa"){
-		return "#EE4000";
+		return "#cc6600";
 	}else if(temp_region == "Nothern Africa"){
-		return "#FF5721";
+		return "#cc6600";
 	}else if(temp_region == "Western Africa"){
-		return "#FF3D0D";
+		return "#cc6600";
 	}else if(temp_region == "Eastern Europe"){
 		return "blue";
 	}else if(temp_region == "Western Europe"){
@@ -321,9 +321,9 @@ var gdpFinal;
 var happinessFinal;
 var region;
 
-var dataRegions = ["south america", "central america", "eastern africa", "northern africa", "western africa", "eastern europe", "western europe"];
+var dataRegions = ["South and Central America", "Africa", "Eastern Europe", "Western Europe"];
 var colorGraph = d3.scale.ordinal()
-    .range(["#7f0000", "#ff3232", "#EE4000", "#FF5721", "#FF3D0D", "blue", "purple"]);
+    .range(["#009933", "#cc6600", "blue", "purple"]);
 
 d3.json("all.json", function(regiondata) {
 	region = regiondata;
@@ -391,15 +391,18 @@ var mapLegend = svgGraph.selectAll(".legend")
       .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
   mapLegend.append("rect")
-      .attr("x", width - 18)
-      .attr("width", 18)
+      .attr("x", width - 48)
+      .attr("y", 30)
+      .attr("width", 25)
       .attr("height", 18)
+      .attr("fill-opacity", 0.7)
       .style("fill", colorGraph);
 
   mapLegend.append("text")
-      .attr("x", width - 24)
-      .attr("y", 9)
+      .attr("x", width - 54)
+      .attr("y", 39)
       .attr("dy", ".35em")
+      .attr("font-size", 15)
       .style("text-anchor", "end")
       .text(function(d) { return d; });
 
