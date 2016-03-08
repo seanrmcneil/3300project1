@@ -331,9 +331,9 @@ var gdpFinal;
 var happinessFinal;
 var region;
 
-var dataRegions = ["South and Central America", "Africa", "Eastern Europe", "Western Europe"];
+var dataRegions = ["South and Central America", "Africa", "Eastern Europe", "Western Europe", "Other Countries"];
 var colorGraph = d3.scale.ordinal()
-    .range([SCAmerica, Africa, easternEurope, WesternEurope]);
+    .range([SCAmerica, Africa, easternEurope, WesternEurope, "#d3d3d3"]);
 
 d3.json("all.json", function(regiondata) {
 	region = regiondata;
