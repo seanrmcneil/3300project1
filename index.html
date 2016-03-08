@@ -1,51 +1,45 @@
 <html>
 <head>
-<link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" type="text/css" href="style.css">
-<!-- Load the d3 library. -->
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-<script src="http://d3js.org/topojson.v1.min.js"></script>
+	<link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<!-- Load the d3 library. -->
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="http://d3js.org/topojson.v1.min.js"></script>
 
 </head>
 <body>
-<div class="graph">
-<h2>Happiness</h2>
-<p class = "description">The happiness graph displays each countries relative happiness index from http://www.happyplanetindex.org/data/. The happiest countries are represented in purple and the least happy countries are reprsented in white with shades of purple representing everything inbetween. Grey represents countries that are undefined. </p>
+	<div class="graph">
+		<h2>Happiness</h2>
+		<p class = "description">The happiness graph displays each countries relative happiness index from http://www.happyplanetindex.org/data/. The happiest countries are represented in purple and the least happy countries are reprsented in white with shades of purple representing everything inbetween. Grey represents countries that are undefined. </p>
 
-<div id="map"></div>
+		<div id="map"></div>
 
-<script>
+		<script>
+//set the happiness and GDP colors
+var happinessColor = "#B23Ad4";
+var GDPColor = "#36e24D";
+
 //set colors for graph 3
 var Africa = "#ff7C00";
 var SCAmerica = "#6bE400";
 var easternEurope = "#04859D";
 var WesternEurope = "#E20048";
-var happinessColor = "#B23Ad4";
-var GDPColor = "#36e24D";
 
-//graph 1 ~ happiness
-var width = 960,
-    height = 500;
-var projection = d3.geo.equirectangular();
-var path = d3.geo.path().projection(projection);
-var svg = d3.select("#map").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-var g = svg.append("g");
-var worldObjects;
-var countryIDName;
-var happinessRank;
+//color scale for graph 1- happiness
 var color1 =d3.scale.linear().domain([1,151]).range([happinessColor,"white"]);
+//color scale for graph 2- GDP
 var color2 =d3.scale.linear().domain([1,208]).range([GDPColor,"white"]);
+
 //get the id mappings json file
 d3.json("id_mapping.json", function(dataID) {
 	countryIDName = dataID;
-	});
+});
 
 //get the happiness data
-d3.json("happiness_final.json", function(happiness) {
-	happinessRank = happiness;
-	});
+d3.json("happiness_final.json", function(error, happinessFinalJSON){
+			happinessFinal = happinessFinalJSON;
+			if(error){console.log(error); }
+		});
 
 //get te gdp data
 d3.json("GDP_final.json", function(gdp) {
@@ -61,7 +55,7 @@ function getCountryName(countryid){
 	}
 }
 //function to return the id of the country based on the name
-//Only used for debugging as of now
+//Only used for debugging
 function getCountryID(countryName){
 	for(var i =0; i<countryIDName.length; i++ ){
 		if(countryIDName[i].name == countryName){
@@ -71,17 +65,17 @@ function getCountryID(countryName){
 }
 //function to get the rank of the country basd on the country name
 function getRank(countryName){
-	var rank = 0;
-	for(var i =0; i<happinessRank.length; i++ ){
-		if(happinessRank[i].country_name == countryName){
-			rank = happinessRank[i].rank;
+	var rank = 0; //set rank = 0 if it is undefined
+	for(var i =0; i<happinessFinal.length; i++ ){
+		if(happinessFinal[i].country_name == countryName){
+			rank = happinessFinal[i].rank;
 		}
 	}
 	return rank;
 }
 //function to get region
 function getRegion(countryName){
-	var rank = 0;
+	var rank = 0; //set rank = 0 if it is undefined
 	for(var i =0; i<region.length; i++ ){
 		if(region[i].country_name == countryName){
 			subregion = region[i].subregion;
@@ -89,20 +83,20 @@ function getRegion(countryName){
 	}
 	return subregion;
 }
-//function to define the color
+//function to define the color (grey if undefined scaled color if otherwise)
 function getColorMap1(rank){
 	if(rank ==0){
 		return "#969696";
 	}else{
 		return color1(rank);}
-}
-//functiion to define the color
+	}
+//functiion to define the color (grey if undefined, scaled color if otherwise)
 function getColorMap2(rank){
 	if(rank ==0){
 		return "#969696";
 	}else{
 		return color2(rank);
-	  }
+	}
 }
 //function to get the rank of the country basd on the country name
 function getGdpRank(countryName){
@@ -114,6 +108,8 @@ function getGdpRank(countryName){
 	}
 	return rank;
 }
+
+//get the GDP value of the country
 function getGDPValue(countryName){
 	var value = 0;
 	for(var i =0; i<gdpFinal.length; i++ ){
@@ -123,6 +119,8 @@ function getGDPValue(countryName){
 	}
 	return value;
 }
+
+//get happiness value of the country
 function getHappinessValue(countryName){
 	var value = 0;
 	for(var i =0; i<happinessFinal.length; i++ ){
@@ -132,6 +130,7 @@ function getHappinessValue(countryName){
 	}
 	return value;
 }
+//get Cannabis usage for each coutnry 
 function getCannabisUsage(countryName){
 	var usage = 0;
 	for(var i =0; i<200; i++ ){
@@ -165,9 +164,21 @@ function fillColor(countryName){
 	}
 }
 
-
+//graph 1 ~ happiness
+var width = 960,
+height = 500;
+var projection = d3.geo.equirectangular();
+var path = d3.geo.path().projection(projection);
+var svg = d3.select("#map").append("svg")
+.attr("width", width)
+.attr("height", height);
+var g = svg.append("g");
+var worldObjects;
+var countryIDName;
+var happinessFinal;
 var countryName = "";
-//the magic
+
+//the magic - fill each country based on happiness rank
 d3.json("world-50m.json", function(error, world) {
 	worldObjects = world;
 	if(error){console.log(error); }
@@ -180,84 +191,65 @@ d3.json("world-50m.json", function(error, world) {
 		.style("fill", (getColorMap1(rank)))
 
 	});
-	//using for debugging purposes.. 
-	//take out later
-	g.selectAll("path").data(countries).on("mouseover", function(country){
-		console.log(getCountryName(country.id));
-
-	});
+	//add rectangle key
 	g.append("rect")
-		.attr("x", 0)
-		.attr("y", 250)
-		.attr("width", 10)
-		.attr("height", 150)
-		.attr("class", "gradient")
-		.style("fill", "url(#gradient)");
+	.attr("x", 0)
+	.attr("y", 250)
+	.attr("width", 10)
+	.attr("height", 150)
+	.attr("class", "gradient")
+	.style("fill", "url(#gradient)");
 
 		// learned about linear gradient from http://bl.ocks.org/mbostock/1086421
 		var gradient = g.append("defs")
-		  .append("linearGradient")
-		  .attr("id", "gradient")
-		    .attr("x1", "0%")
-		    .attr("y1", "0%")
-		    .attr("x2", "0%")
-		    .attr("y2", "100%");
+		.append("linearGradient")
+		.attr("id", "gradient")
+		.attr("x1", "0%")
+		.attr("y1", "0%")
+		.attr("x2", "0%")
+		.attr("y2", "100%");
 		gradient.append("stop")
-		    .attr("offset", "0%")
-		    .attr("stop-color", "white");
+		.attr("offset", "0%")
+		.attr("stop-color", "white");
 		gradient.append("stop")
-		    .attr("offset", "100%")
-		    .attr("stop-color", happinessColor);
+		.attr("offset", "100%")
+		.attr("stop-color", happinessColor);
 
-		 g.append("text")
-		 .attr("x", 12)
-		 .attr("y", 250)
-		 .text("Least Happy");
+		g.append("text")
+		.attr("x", 12)
+		.attr("y", 250)
+		.text("Least Happy");
 
-		  g.append("text")
-		 .attr("x", 12)
-		 .attr("y", 400)
-		 .text("Happiest");
-
-		 
-
-
-});
-console.log("after json");
+		g.append("text")
+		.attr("x", 12)
+		.attr("y", 400)
+		.text("Happiest");
+	});
 
 </script>
 </div>
-<script>
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////
-</script>
 
 <div class="graph">
-<h2>GDP</h2>
-<p class = "description">The GDP graph displays each countries relative GDP rank from https://www.google.com/fusiontables/DataSource?docid=1N0MaGTWtytF3zW-nj7OGnJFB3lf_n4Zcr54sib4#rows:id=1. The countries with the highest GDP are represented in green and the countries with the lowest GDP are represented in white. Grey represents countries that are undefined. </p>
-<div id="map2"></div>
+	<h2>GDP</h2>
+	<p class = "description">The GDP graph displays each countries relative GDP rank from https://www.google.com/fusiontables/DataSource?docid=1N0MaGTWtytF3zW-nj7OGnJFB3lf_n4Zcr54sib4#rows:id=1. The countries with the highest GDP are represented in green and the countries with the lowest GDP are represented in white. Grey represents countries that are undefined. </p>
+	<div id="map2"></div>
 
-<script>
+	<script>
+
 //graph 2 ~ GDP
 var width2 = 960,
-    height2 = 500;
+height2 = 500;
 var projection2 = d3.geo.equirectangular();
 var path2 = d3.geo.path().projection(projection2);
 var svg2 = d3.select("#map2").append("svg")
-    .attr("width", width2)
-    .attr("height", height2);
+.attr("width", width2)
+.attr("height", height2);
 var g2 = svg2.append("g");
 var worldObjects2;
 var gdpRank;
 
 
-
-//countryName = "";
-//the magic
+//the magic - fill country color based on GDP
 d3.json("world-50m.json", function(error, world) {
 	worldObjects2 = world;
 	if(error){console.log(error); }
@@ -269,108 +261,100 @@ d3.json("world-50m.json", function(error, world) {
 		.attr("class", "country")
 		.style("fill", getColorMap2(rank2));
 	});
-	//using for debugging purposes.. 
-	//take out later
-	g2.selectAll("path").data(countries2).on("mouseover", function(country){
-		console.log(getCountryName(country.id));
-	});
 
+	//rectangle key that has the color gradient
 	g2.append("rect")
-		.attr("x", 0)
-		.attr("y", 250)
-		.attr("width", 10)
-		.attr("height", 150)
-		.attr("class", "gradient")
-		.style("fill", "url(#gradient2)");
+	.attr("x", 0)
+	.attr("y", 250)
+	.attr("width", 10)
+	.attr("height", 150)
+	.attr("class", "gradient")
+	.style("fill", "url(#gradient2)");
 
 		// learned about linear gradient from http://bl.ocks.org/mbostock/1086421
 		var gradient2 = g2.append("defs")
-		  .append("linearGradient")
-		  .attr("id", "gradient2")
-		    .attr("x1", "0%")
-		    .attr("y1", "0%")
-		    .attr("x2", "0%")
-		    .attr("y2", "100%");
+		.append("linearGradient")
+		.attr("id", "gradient2")
+		.attr("x1", "0%")
+		.attr("y1", "0%")
+		.attr("x2", "0%")
+		.attr("y2", "100%");
 		gradient2.append("stop")
-		    .attr("offset", "0%")
-		    .attr("stop-color", "white");
+		.attr("offset", "0%")
+		.attr("stop-color", "white");
 		gradient2.append("stop")
-		    .attr("offset", "100%")
-		    .attr("stop-color", GDPColor);
+		.attr("offset", "100%")
+		.attr("stop-color", GDPColor);
 
-		 g2.append("text")
-		 .attr("x", 12)
-		 .attr("y", 250)
-		 .text("Poorest");
+		g2.append("text")
+		.attr("x", 12)
+		.attr("y", 250)
+		.text("Poorest");
 
-		  g2.append("text")
-		 .attr("x", 12)
-		 .attr("y", 400)
-		 .text("Richest");
-});
- </script>
+		g2.append("text")
+		.attr("x", 12)
+		.attr("y", 400)
+		.text("Richest");
+	});
+</script>
 </div>
 
 
-
 <div class="graph">
-<h2>GDP vs Happiness</h2>
-<p class = "description">GDP VS Happiness plots each country's GDP (in $) vs their happiness index. Different regions are represented by different colors as shown by the key. Only the most interesting regions are colored. Central and South America are interesting because they are particularly happy given their GDP. Western Europe is interesting because it is particularly unhappy given the GDP.</p>
- <div id = "graph"> </div>
+	<h2>GDP vs Happiness</h2>
+	<p class = "description">GDP VS Happiness plots each country's GDP (in $) vs their happiness index. Different regions are represented by different colors as shown by the key. Only the most interesting regions are colored. Central and South America are interesting because they are particularly happy given their GDP. Western Europe is interesting because it is particularly unhappy given the GDP.</p>
+	<div id = "graph"> </div>
 
-<script>
-var legendRectSize = 18;
-var legendSpacing = 4;
-
-
-var widthGraph = 1000,
-	heightGraph = 600,
-	xPaddingGraph = 100,
-	yPaddingGraph = 100;
-var gdpFinal;
-var happinessFinal;
-var region;
-
-var dataRegions = ["South and Central America", "Africa", "Eastern Europe", "Western Europe", "Other Countries"];
-var colorGraph = d3.scale.ordinal()
-    .range([SCAmerica, Africa, easternEurope, WesternEurope, "#d3d3d3"]);
-
-d3.json("all.json", function(regiondata) {
-	region = regiondata;
-})
+	<script>
+	//key for map 3
+		var legendRectSize = 18;
+		var legendSpacing = 4;
 
 
+		var widthGraph = 1000,
+		heightGraph = 600,
+		xPaddingGraph = 100,
+		yPaddingGraph = 100;
+		var gdpFinal;
+		var happinessFinal;
+		var region;
+
+		var dataRegions = ["South and Central America", "Africa", "Eastern Europe", "Western Europe", "Other Countries"];
+		var colorGraph = d3.scale.ordinal()
+		.range([SCAmerica, Africa, easternEurope, WesternEurope, "#d3d3d3"]);
+
+		//get region data
+		d3.json("all.json", function(regiondata) {
+			region = regiondata;
+		});
 
 
-var svgGraph = d3.select("#graph").append("svg")
-    .attr("width", widthGraph)
-    .attr("height", heightGraph)
-    .append("g");
+		var svgGraph = d3.select("#graph").append("svg")
+		.attr("width", widthGraph)
+		.attr("height", heightGraph)
+		.append("g");
 
-var xScaleGraph = d3.scale.log().domain([150, 130000]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
-var yScaleGraph = d3.scale.linear().domain([10, 50]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
-var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(5, "$");
-var yAxis = d3.svg.axis().scale(yScaleGraph).orient("left").ticks(10);
-svgGraph.append("g").attr("transform", "translate(0," + (heightGraph - yPaddingGraph) + ")")
-.call(xAxis);
-svgGraph.append("g").attr("transform", "translate(" + xPaddingGraph + ",0)")
-.call(yAxis);
-
-
-var rScale = d3.scale.pow()
-            .domain([-30, 30])
-            .range([0, 20]);
-
-d3.json("happiness_final.json", function(error, happinessFinalJSON){
-	happinessFinal = happinessFinalJSON;
-		if(error){console.log(error); }
-});
+		var xScaleGraph = d3.scale.log().domain([150, 130000]).range([xPaddingGraph, widthGraph - xPaddingGraph]);
+		var yScaleGraph = d3.scale.linear().domain([10, 50]).range([heightGraph - yPaddingGraph, yPaddingGraph]);
+		var xAxis = d3.svg.axis().scale(xScaleGraph).orient("bottom").ticks(5, "$");
+		var yAxis = d3.svg.axis().scale(yScaleGraph).orient("left").ticks(10);
+		svgGraph.append("g").attr("transform", "translate(0," + (heightGraph - yPaddingGraph) + ")")
+		.call(xAxis);
+		svgGraph.append("g").attr("transform", "translate(" + xPaddingGraph + ",0)")
+		.call(yAxis);
 
 
-d3.json("GDP_final.json", function(error, gdpFinalJSON){
-		if(error){console.log(error); }
-		gdpFinal = gdpFinalJSON;
-        for(var i = 0; i<1000;i++){
+		var rScale = d3.scale.pow()
+		.domain([-30, 30])
+		.range([0, 20]);
+
+		
+
+
+		d3.json("GDP_final.json", function(error, gdpFinalJSON){
+			if(error){console.log(error); }
+			gdpFinal = gdpFinalJSON;
+			for(var i = 0; i<1000;i++){
 				name = getCountryName(i);
 				gdp = getGDPValue(name);
 				happiness = getHappinessValue(name);
@@ -378,43 +362,43 @@ d3.json("GDP_final.json", function(error, gdpFinalJSON){
 					continue;
 				//region
 				
-        		svgGraph.append("circle")
-       	 		.attr("class", "circle")
-        		.attr("cx",xScaleGraph(gdp))
-        		.attr("cy", yScaleGraph(happiness))
-        		.attr("r", 12)
-        		.style("fill", fillColor(name))
-        		.attr("class", "country_circles")
-        		.attr("data-legend",function(d) { return d});
+				svgGraph.append("circle")
+				.attr("class", "circle")
+				.attr("cx",xScaleGraph(gdp))
+				.attr("cy", yScaleGraph(happiness))
+				.attr("r", 12)
+				.style("fill", fillColor(name))
+				.attr("class", "country_circles")
+				.attr("data-legend",function(d) { return d});
 			};
-				legend = svg.append("g")
-				  .attr("class","legend")
-				  .attr("transform","translate(50,30)")
-				  .call(d3.legend);
+			legend = svg.append("g")
+			.attr("class","legend")
+			.attr("transform","translate(50,30)")
+			.call(d3.legend);
 
 		});
 
-var mapLegend = svgGraph.selectAll(".legend")
-      .data(dataRegions)
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+		var mapLegend = svgGraph.selectAll(".legend")
+		.data(dataRegions)
+		.enter().append("g")
+		.attr("class", "legend")
+		.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-  mapLegend.append("rect")
-      .attr("x", width - 48)
-      .attr("y", 30)
-      .attr("width", 25)
-      .attr("height", 18)
-      .attr("fill-opacity", 0.7)
-      .style("fill", colorGraph);
+		mapLegend.append("rect")
+		.attr("x", width - 48)
+		.attr("y", 30)
+		.attr("width", 25)
+		.attr("height", 18)
+		.attr("fill-opacity", 0.7)
+		.style("fill", colorGraph);
 
-  mapLegend.append("text")
-      .attr("x", width - 54)
-      .attr("y", 39)
-      .attr("dy", ".35em")
-      .attr("font-size", 15)
-      .style("text-anchor", "end")
-      .text(function(d) { return d; });
+		mapLegend.append("text")
+		.attr("x", width - 54)
+		.attr("y", 39)
+		.attr("dy", ".35em")
+		.attr("font-size", 15)
+		.style("text-anchor", "end")
+		.text(function(d) { return d; });
 
 //Function to put labels, on both axes.
 //Assumes the graph starts from 0 for x and y axes (no negative values)
@@ -424,19 +408,19 @@ function drawLabels(svgA,width,height,xPad,yPad,xLabel,yLabel){
 	svgA.append("text")
 	.attr("class", "axisLabel")
 	.attr("text-anchor", "middle")
-    .attr("x", width/2)
-    .attr("y", height - yPad/4)
- 	.text(xLabel);
+	.attr("x", width/2)
+	.attr("y", height - yPad/4)
+	.text(xLabel);
 
  	//Label on y axis
-	svgA.append("text")
-	.attr("class", "axisLabel")
-	.attr("text-anchor", "middle")
-    .attr("x", 0)
-    .attr("y", 0)
+ 	svgA.append("text")
+ 	.attr("class", "axisLabel")
+ 	.attr("text-anchor", "middle")
+ 	.attr("x", 0)
+ 	.attr("y", 0)
  	.text(yLabel)
  	.attr("transform", "translate(" + xPad/3 + ", " + (height/2 + yPad/5) +") rotate (-90)");
-}
+ }
 
 //Draw arrow on x axis and and label on both sides
 //provide svg to draw on that specific svg. 
@@ -448,101 +432,101 @@ function drawArrowAndLabel(svgA,width,height,xPad,yPad,xSkew,xLabel,xLabel2,yLab
 	//The line for right arrow
 	svgA.append("line")
 	.attr("class","line")
-    .attr("x1", width/2 + xPad /5)
-    .attr("y1", height - yPad/2)
-    .attr("x2", width - xPad)
-    .attr("y2", height - yPad/2);
+	.attr("x1", width/2 + xPad /5)
+	.attr("y1", height - yPad/2)
+	.attr("x2", width - xPad)
+	.attr("y2", height - yPad/2);
 
     //the upper part of the right arrow
-	svgA.append("line")
-	.attr("class", "line")
+    svgA.append("line")
+    .attr("class", "line")
     .attr("x1", width - xPad)
     .attr("y1", height - yPad/2)
     .attr("x2", width - xPad *1.2)
     .attr("y2", height - yPad/2 - yPad/xSkew);
 
     //the bottom part of the right arrow
-	svgA.append("line")
-	.attr("class", "line")
+    svgA.append("line")
+    .attr("class", "line")
     .attr("x1", width - xPad)
     .attr("y1", height - yPad/2)
     .attr("x2", width - xPad * 1.2)
     .attr("y2", height - yPad/2 + yPad/xSkew);
 
     //The line for left arrow
-	svgA.append("line")
-	.attr("class","line")
+    svgA.append("line")
+    .attr("class","line")
     .attr("x1", width/2 - xPad /5)
     .attr("y1", height - yPad/2)
     .attr("x2", xPad)
     .attr("y2", height - yPad/2);
 
     //The upper part of the left arrow
-	svgA.append("line")
-	.attr("class", "line")
+    svgA.append("line")
+    .attr("class", "line")
     .attr("x1", xPad)
     .attr("y1", height - yPad/2)
     .attr("x2", xPad *1.2)
     .attr("y2", height - yPad/2 - yPad/xSkew);
 
     //The bottom part of the left arrow
-	svgA.append("line")
-	.attr("class", "line")
+    svgA.append("line")
+    .attr("class", "line")
     .attr("x1", xPad)
     .attr("y1", height - yPad/2)
     .attr("x2", xPad * 1.2)
     .attr("y2", height - yPad/2 + yPad/xSkew);
 
     //Label for the right arrow
-	svgA.append("text")
-	.attr("class", "axisLabel")
-	.attr("text-anchor", "middle")
+    svgA.append("text")
+    .attr("class", "axisLabel")
+    .attr("text-anchor", "middle")
     .attr("x", width/2 + width/(5.5))
     .attr("y", height - yPad/4)
- 	.text(xLabel);
+    .text(xLabel);
 
  	//Label for the left arrow
-	svgA.append("text")
-	.attr("class", "axisLabel")
-	.attr("text-anchor", "middle")
-    .attr("x", width/2 - width/(5.5))
-    .attr("y", height - yPad/4)
+ 	svgA.append("text")
+ 	.attr("class", "axisLabel")
+ 	.attr("text-anchor", "middle")
+ 	.attr("x", width/2 - width/(5.5))
+ 	.attr("y", height - yPad/4)
  	.text(xLabel2);
 
  	//Y axis label
  	svgA.append("text")
-	.attr("class", "axisLabel")
-	.attr("text-anchor", "middle")
-    .attr("x", 0)
-    .attr("y", 0)
+ 	.attr("class", "axisLabel")
+ 	.attr("text-anchor", "middle")
+ 	.attr("x", 0)
+ 	.attr("y", 0)
  	.text(yLabel)
  	.attr("transform", "translate(" + xPad/3 + ", " + (height/2 + yPad/5) +") rotate (-90)");
-}
+ }
 
-drawLabels(svgGraph,widthGraph,heightGraph,xPaddingGraph,yPaddingGraph,
-	"GDP per Capita (log scale)","Happiness Planet Index (HPI)");
+ drawLabels(svgGraph,widthGraph,heightGraph,xPaddingGraph,yPaddingGraph,
+ 	"GDP per Capita (log scale)","Happiness Planet Index (HPI)");
 
-</script>
+ </script>
 </div>
 
 <div class="graph">
-<h2>Drug Use vs. Poor but Happy</h2>
-<p class = "description">There is clearly a correlation between how wealthy a country is and how happy it is. But as seen in the graph above, there are some countries, (and perhaps even entire regions!) where people are happier than other countries with the same money.<br>
-How are these countries happier relative to their wealth? <br>
-Are they perhaps simply relying on drugs?<br><br>
-Cannabis usage data from https://data.unodc.org/, UN Office on Drugs and Crime.
- </p>
-<div id="scatterplot"></div>
-<script>
+	<h2>Drug Use vs. Poor but Happy</h2>
+	<p class = "description">There is clearly a correlation between how wealthy a country is and how happy it is. But as seen in the graph above, there are some countries, (and perhaps even entire regions!) where people are happier than other countries with the same money.<br>
+		How are these countries happier relative to their wealth? <br>
+		Are they perhaps simply relying on drugs?<br><br>
+		Cannabis usage data from https://data.unodc.org/, UN Office on Drugs and Crime.
+	</p>
+	<div id="scatterplot"></div>
+	<script>
 //scatterplot : drug use of optimistic countries and pessimistic countries
 var width3 = 1000,
-    height3 = 600,
-    xPadding3 = 100,
-    yPadding3 = 100;
+height3 = 600,
+xPadding3 = 100,
+yPadding3 = 100;
 var svg3 = d3.select("#scatterplot").append("svg")
-    .attr("width", width3)
-    .attr("height", height3)
-    .append("g");
+.attr("width", width3)
+.attr("height", height3)
+.append("g");
 var cannabisUsage;
 
 //Y axis for how drugged they are
@@ -563,29 +547,29 @@ var color3 =d3.scale.linear().domain([-150,150]).range(["#0f4fa8","yellow"]);
 d3.json("cannabis.json", function(error, cannabisJSON){
 	cannabisUsage = cannabisJSON;
 	if(error){console.log(error); }
-        var rScale = d3.scale.pow()
-            .domain([-30, 30])
-            .range([0, 20]);
-        for(var i = 0; i<1000;i++){
-			name = getCountryName(i);
-			gdp = getGdpRank(name);
-			happiness = getRank(name);
-			optimism = happiness - gdp;
-			cannabis = getCannabisUsage(name);
-			if(gdp == 0 || happiness == 0 || cannabis == 0)
-				continue;
-        	svg3.append("circle")
-       	 	.attr("class", "circle")
-        	.attr("cx",xScale4(optimism))
-        	.attr("cy", yScale4(cannabis))
-        	.attr("r", rScale(30))
-        	.style("fill", (color3(optimism)))
-        	.style("fill-opacity", 0.4);
-		}	       
+	var rScale = d3.scale.pow()
+	.domain([-30, 30])
+	.range([0, 20]);
+	for(var i = 0; i<1000;i++){
+		name = getCountryName(i);
+		gdp = getGdpRank(name);
+		happiness = getRank(name);
+		optimism = happiness - gdp;
+		cannabis = getCannabisUsage(name);
+		if(gdp == 0 || happiness == 0 || cannabis == 0)
+			continue;
+		svg3.append("circle")
+		.attr("class", "circle")
+		.attr("cx",xScale4(optimism))
+		.attr("cy", yScale4(cannabis))
+		.attr("r", rScale(30))
+		.style("fill", (color3(optimism)))
+		.style("fill-opacity", 0.4);
+	}	       
 });
 //Put the arrows labels on the graph
 drawArrowAndLabel(svg3,width3,height3,xPadding3,yPadding3,5,
- 	"Happy relative to GDP","Unhappy relative to GDP","Cannabis usage by country (%)");
+	"Happy relative to GDP","Unhappy relative to GDP","Cannabis usage by country (%)");
 
 </script>
 </div>
