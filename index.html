@@ -15,6 +15,14 @@
 <div id="map"></div>
 
 <script>
+//set colors for graph 3
+var Africa = "#ff7C00";
+var SCAmerica = "#6bE400";
+var easternEurope = "#04859D";
+var WesternEurope = "#E20048";
+var happinessColor = "#B23Ad4";
+var GDPColor = "#36e24D";
+
 //graph 1 ~ happiness
 var width = 960,
     height = 500;
@@ -27,8 +35,8 @@ var g = svg.append("g");
 var worldObjects;
 var countryIDName;
 var happinessRank;
-var color1 =d3.scale.linear().domain([1,151]).range(["#8856a7","white"]);
-var color2 =d3.scale.linear().domain([1,208]).range(["#6AAF6A","white"]);
+var color1 =d3.scale.linear().domain([1,151]).range([happinessColor,"white"]);
+var color2 =d3.scale.linear().domain([1,208]).range([GDPColor,"white"]);
 //get the id mappings json file
 d3.json("id_mapping.json", function(dataID) {
 	countryIDName = dataID;
@@ -84,14 +92,14 @@ function getRegion(countryName){
 //function to define the color
 function getColorMap1(rank){
 	if(rank ==0){
-		return "grey";
+		return "#969696";
 	}else{
 		return color1(rank);}
 }
 //functiion to define the color
 function getColorMap2(rank){
 	if(rank ==0){
-		return "grey";
+		return "#969696";
 	}else{
 		return color2(rank);
 	  }
@@ -137,19 +145,21 @@ function getCannabisUsage(countryName){
 function fillColor(countryName){
 	temp_region = getRegion(countryName);
 	if(temp_region== "South America"){
-		return "#009933";
+		return SCAmerica;
 	}else if(temp_region == "Central America"){
-		return "#009933";
+		return SCAmerica;
 	}else if(temp_region == "Eastern Africa"){
-		return "#cc6600";
+		return Africa;
 	}else if(temp_region == "Nothern Africa"){
-		return "#cc6600";
+		return Africa;
 	}else if(temp_region == "Western Africa"){
-		return "#cc6600";
+		return Africa;
 	}else if(temp_region == "Eastern Europe"){
-		return "blue";
+		return easternEurope;
 	}else if(temp_region == "Western Europe"){
-		return "purple";	
+		return WesternEurope;
+	}else if(temp_region == "South Africa"){
+		return Africa;	
 	}else{
 		return "#d3d3d3";	
 	}
@@ -197,7 +207,7 @@ d3.json("world-50m.json", function(error, world) {
 		    .attr("stop-color", "white");
 		gradient.append("stop")
 		    .attr("offset", "100%")
-		    .attr("stop-color", "#8856a7");
+		    .attr("stop-color", happinessColor);
 
 		 g.append("text")
 		 .attr("x", 12)
@@ -286,7 +296,7 @@ d3.json("world-50m.json", function(error, world) {
 		    .attr("stop-color", "white");
 		gradient2.append("stop")
 		    .attr("offset", "100%")
-		    .attr("stop-color", "#6AAF6A");
+		    .attr("stop-color", GDPColor);
 
 		 g2.append("text")
 		 .attr("x", 12)
@@ -323,7 +333,7 @@ var region;
 
 var dataRegions = ["South and Central America", "Africa", "Eastern Europe", "Western Europe"];
 var colorGraph = d3.scale.ordinal()
-    .range(["#009933", "#cc6600", "blue", "purple"]);
+    .range([SCAmerica, Africa, easternEurope, WesternEurope]);
 
 d3.json("all.json", function(regiondata) {
 	region = regiondata;
